@@ -63,7 +63,7 @@ export function RSVPSection() {
               <Check size={22} />
             </span>
             <h3 className="font-display text-2xl text-olive-dark italic">Gràcies, {form.nom.split(" ")[0] || ""}!</h3>
-            <p className="max-w-sm text-olive-dark/80">
+            <p className="max-w-sm text-olive-dark">
               {attending
                 ? "Hem rebut la teva confirmació. Ens fa molta il·lusió celebrar-ho amb tu!"
                 : "Gràcies per fer-nos-ho saber, et trobarem a faltar aquell dia."}
@@ -116,7 +116,7 @@ export function RSVPSection() {
                       className={`rounded-sm border px-4 py-3 text-sm font-medium transition-colors ${
                         form.assistencia === value
                           ? "border-olive bg-olive text-ivory"
-                          : "border-sage-grey text-olive-dark/80 hover:border-olive"
+                          : "border-sage-grey text-olive-dark hover:border-olive"
                       }`}
                     >
                       {text}

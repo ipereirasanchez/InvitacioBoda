@@ -1,5 +1,22 @@
 import assert from "node:assert/strict";
 
+// Recorre una secció perquè tots els Reveal s'activin i en retorna la caixa en coordenades de pàgina.
+async function revealSection(page, selector) {
+  const box = await page.evaluate((sel) => {
+    const r = document.querySelector(sel).getBoundingClientRect();
+    return { top: r.top + window.scrollY, height: r.height };
+  }, selector);
+  for (let y = box.top - 200; y <= box.top + box.height; y += 300) {
+    await page.evaluate((top) => window.scrollTo(0, top), y);
+    await page.waitForTimeout(120);
+  }
+  await page.locator(selector).scrollIntoViewIfNeeded();
+  await page.waitForTimeout(800);
+  return page.evaluate((sel) => {
+    const r = document.querySelector(sel).getBoundingClientRect();
+    return { x: 0, y: r.top + window.scrollY, width: document.documentElement.clientWidth, height: r.height };
+  }, selector);
+}
 export const checks = [
   {
     name: "faq-cards",
@@ -11,6 +28,12 @@ export const checks = [
       const answers = page.locator("#faq article p");
       const n = await answers.count();
       assert.equal(n, 5, "5 respostes");
+      await page.locator("#faq").scrollIntoViewIfNeeded();
+      await page.waitForTimeout(1200);
+      const ops = await page.$$eval("#faq article", (as) =>
+        as.map((a) => getComputedStyle(a.closest("[data-reveal]") ?? a).opacity),
+      );
+      assert(ops.every((o) => o === "1"), `targetes amb opacitat != 1: ${ops.join(",")}`);
       for (let i = 0; i < n; i++) {
         assert(await answers.nth(i).isVisible(), `resposta ${i} no visible`);
       }
@@ -19,9 +42,8 @@ export const checks = [
         const t1 = (await cards.nth(1).boundingBox()).y;
         assert.equal(Math.round(t0), Math.round(t1), "les dues primeres targetes han de compartir el top");
       }
-      await page.locator("#faq").scrollIntoViewIfNeeded();
-      await page.waitForTimeout(1200);
-      await shot("faq");
+      const clip = await revealSection(page, "#faq");
+      await shot("faq", { clip });
     },
   },
   {

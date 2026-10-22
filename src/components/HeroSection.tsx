@@ -52,7 +52,7 @@ export function HeroSection() {
             <h1 className="mt-1 font-display text-6xl leading-none text-olive-dark italic sm:text-7xl md:text-8xl md:text-ivory md:drop-shadow-md">
               {wedding.bride} &amp; {wedding.groom}
             </h1>
-            <p className="mt-2 font-display text-3xl tracking-wide text-date-brown md:text-4xl">
+            <p className="mt-2 font-display text-3xl tracking-wide text-date-brown md:text-4xl [font-variant-numeric:lining-nums]">
               {wedding.dateShort}
             </p>
             <p className="mt-2 font-sans text-sm text-olive-dark">
@@ -68,7 +68,7 @@ export function HeroSection() {
       <a
         href="#historia"
         aria-label="Baixa a la següent secció"
-        className="absolute hidden md:block bottom-6 left-1/2 z-10 -translate-x-1/2 animate-bounce text-olive-dark/70"
+        className="absolute hidden md:block bottom-6 left-1/2 z-10 -translate-x-1/2 motion-safe:animate-bounce text-olive-dark/70"
       >
         <ChevronDown size={28} />
       </a>

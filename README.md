@@ -34,7 +34,7 @@ npm run preview
 
 - `npm run assets:webp` — regenera les imatges WebP de `src/assets/` a partir dels originals.
 - `npm run assets:svg` — optimitza els SVG originals i regenera els de `src/assets/`.
-- `npm run check:ui` — compila i executa les comprovacions visuals i del DOM amb Chrome (`scripts/checks/*.mjs`); desa captures a `docs/captures/`. Variables: `UI_CHECK_ONLY=<nom>` per executar una sola comprovació, `UI_CHECK_REDUCED_MOTION=1` per simular moviment reduït i `UI_CHECK_PORT` per canviar el port (per defecte 4173).
+- `npm run check:ui` — compila i executa les comprovacions visuals i del DOM amb Chrome (`scripts/checks/*.mjs`); desa captures a `docs/captures/`. Variables: `UI_CHECK_ONLY=<nom>` per executar una sola comprovació, `UI_CHECK_REDUCED_MOTION=1` per simular moviment reduït i `UI_CHECK_PORT` per canviar el port (per defecte 4173). `npm run assets:webp` requereix ImageMagick 6 (`convert`) amb suport WebP, i `check:ui` requereix tenir Google Chrome instal·lat.
 
 > Les dades d'aquest repositori són d'exemple. No hi ha informació personal real.
 

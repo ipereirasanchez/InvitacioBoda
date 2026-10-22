@@ -90,7 +90,7 @@ export const checks = [
   {
     name: "reveal-reduced-motion",
     viewports: ["desktop", "mobile"],
-    run: async (page) => {
+    run: async (page, { viewport }) => {
       if (process.env.UI_CHECK_REDUCED_MOTION !== "1") {
         console.log("  (reveal-reduced-motion omesa: cal UI_CHECK_REDUCED_MOTION=1)");
         return;
@@ -103,6 +103,13 @@ export const checks = [
       assert(ops.length > 0, "no hi ha cap [data-reveal]");
       const bad = ops.filter((o) => o !== "1");
       assert.equal(bad.length, 0, `${bad.length}/${ops.length} [data-reveal] amb opacitat != 1: ${bad.join(",")}`);
+      const sb = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior);
+      assert.notEqual(sb, "smooth", "scroll-behavior ha de no ser smooth amb moviment reduït");
+      const arrow = page.locator('a[aria-label="Baixa a la següent secció"]');
+      if (viewport === "desktop") {
+        const an = await arrow.evaluate((el) => getComputedStyle(el).animationName);
+        assert.equal(an, "none", "la fletxa no ha d'animar amb moviment reduït");
+      }
     },
   },
   {

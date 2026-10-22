@@ -16,7 +16,7 @@ export function LocationSection() {
 
       <div className="mx-auto mt-14 grid max-w-5xl items-center gap-10 md:grid-cols-2">
         <Reveal>
-          <img src={finca} alt="Il·lustració de la finca" className="w-full" loading="lazy" />
+          <img src={finca} alt="Il·lustració de la finca" width={1200} height={799} className="w-full" loading="lazy" />
         </Reveal>
 
         <Reveal delay={120} className="text-center md:text-left">
@@ -25,7 +25,7 @@ export function LocationSection() {
             <span className="font-display text-2xl text-olive-dark italic">{wedding.venueName}</span>
           </div>
           <p className="font-sans text-olive-dark">{wedding.venueAddress}</p>
-          <p className="mt-4 leading-relaxed text-olive-dark/80">
+          <p className="mt-4 leading-relaxed text-olive-dark">
             {wedding.venueName}, {wedding.venueLocation}. Un indret envoltat de natura, perfecte per
             celebrar-hi el nostre gran dia a l&apos;aire lliure.
           </p>

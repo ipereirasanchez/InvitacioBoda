@@ -14,7 +14,7 @@ export function SectionHeading({ eyebrow, title, subtitle, light = false }: Sect
       {eyebrow && (
         <p
           className={`mb-3 font-sans text-xs font-medium tracking-[0.3em] uppercase ${
-            light ? "text-ivory/80" : "text-olive"
+            light ? "text-ivory" : "text-olive-dark"
           }`}
         >
           {eyebrow}
@@ -26,7 +26,7 @@ export function SectionHeading({ eyebrow, title, subtitle, light = false }: Sect
         {title}
       </h2>
       {subtitle && (
-        <p className={`mx-auto mt-4 max-w-xl text-balance ${light ? "text-ivory/90" : "text-olive-dark/80"}`}>
+        <p className={`mx-auto mt-4 max-w-xl text-balance ${light ? "text-ivory" : "text-olive-dark"}`}>
           {subtitle}
         </p>
       )}

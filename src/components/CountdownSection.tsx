@@ -39,7 +39,7 @@ export function CountdownSection() {
               <span className="font-display text-4xl text-ivory drop-shadow-sm sm:text-5xl">
                 {String(value).padStart(2, "0")}
               </span>
-              <span className="mt-1 font-sans text-[11px] tracking-[0.2em] text-olive-dark/80 uppercase">
+              <span className="mt-1 font-sans text-[11px] tracking-[0.2em] text-olive-dark uppercase">
                 {label}
               </span>
             </div>

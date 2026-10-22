@@ -61,4 +61,22 @@ export const checks = [
       assert(!/brideAndGroom|mapEmbedSrc/.test(data), "weddingData.ts conté camps retirats");
     },
   },
+  {
+    name: "eyebrow-contrast",
+    viewports: ["desktop"],
+    run: async (page) => {
+      const c = await page.evaluate(() => {
+        const eyebrow = document.querySelector("#faq p");
+        const story = [...document.querySelectorAll("#historia p")].find((p) =>
+          p.textContent.trim().startsWith("Aquest és el lloc"),
+        );
+        return {
+          eyebrow: eyebrow && getComputedStyle(eyebrow).color,
+          story: story && getComputedStyle(story).color,
+        };
+      });
+      assert.equal(c.eyebrow, "rgb(81, 84, 73)", "color de l'eyebrow de #faq");
+      assert.equal(c.story, "rgb(81, 84, 73)", "color del paràgraf d'història");
+    },
+  },
 ];

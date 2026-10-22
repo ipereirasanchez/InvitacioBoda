@@ -49,7 +49,7 @@ export function FAQSection() {
                 <Icon className="mt-1 shrink-0 text-olive" size={22} strokeWidth={1.4} />
                 <div>
                   <h3 className="font-display text-xl text-olive-dark">{faq.question}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-olive-dark/80">{faq.answer}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-olive-dark">{faq.answer}</p>
                 </div>
               </article>
             </Reveal>
