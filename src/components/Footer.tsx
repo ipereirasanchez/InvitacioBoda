@@ -7,7 +7,7 @@ export function Footer() {
     <footer className="bg-olive-dark px-6 py-14 text-center text-ivory">
       <p className="font-display flex items-center justify-center gap-3 text-4xl italic">
         {wedding.bride}
-        <LogoSimple data-logo="simple" aria-hidden className="h-[1.2em] w-auto" />
+        <LogoSimple data-logo="simple" aria-hidden className="h-[1.5em] w-auto" />
         {wedding.groom}
       </p>
       <div>

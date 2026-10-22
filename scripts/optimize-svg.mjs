@@ -10,6 +10,11 @@ const OUT = path.join(root, "src", "assets");
 const NAMES = ["logo", "logo-simple", "senefa-floral-1", "senefa-floral-2"];
 const MONO = ["logo-simple", "senefa-floral-1", "senefa-floral-2"];
 
+// viewBox ajustat al dibuix (l'original té molt d'espai buit). Obtingut carregant
+// l'original a Chrome (playwright-core, channel "chrome") i llegint svg.getBBox():
+// 162.50 192.77 342.03 362.44, amb un marge del 2 % per cada costat.
+const VIEWBOX_OVERRIDES = { "logo-simple": "155.66 185.52 355.71 376.94" };
+
 mkdirSync(OUT, { recursive: true });
 
 for (const name of NAMES) {
@@ -37,6 +42,10 @@ for (const name of NAMES) {
     if (!/<svg[^>]*\sfill="/.test(data)) {
       data = data.replace(/<svg\b/, '<svg fill="currentColor"');
     }
+  }
+
+  if (VIEWBOX_OVERRIDES[name]) {
+    data = data.replace(/viewBox="[^"]*"/, `viewBox="${VIEWBOX_OVERRIDES[name]}"`);
   }
 
   writeFileSync(path.join(OUT, `${name}.svg`), data);
