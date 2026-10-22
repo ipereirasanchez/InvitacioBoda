@@ -54,6 +54,15 @@ async function runOne(viewport, check, page, shot) {
 
 mkdirSync(CAPTURES, { recursive: true });
 const checks = await loadChecks();
+if (!checks.length) {
+  const only = process.env.UI_CHECK_ONLY;
+  console.error(
+    only
+      ? `Cap comprovació coincideix amb UI_CHECK_ONLY=${only}`
+      : "No s'ha trobat cap comprovació a scripts/checks/*.mjs",
+  );
+  process.exit(1);
+}
 const server = spawn("npx", ["vite", "preview", "--port", "4173", "--strictPort"], {
   cwd: root,
   stdio: "ignore",
@@ -84,7 +93,6 @@ try {
         ...(process.env.UI_CHECK_REDUCED_MOTION === "1" ? { reducedMotion: "reduce" } : {}),
       });
       const page = await context.newPage();
-      await page.goto(BASE, { waitUntil: "networkidle" });
       const shot = async (name, opts = {}) => {
         await page.screenshot({
           path: path.join(CAPTURES, `${viewport}-${name}.png`),
@@ -92,7 +100,10 @@ try {
           ...opts,
         });
       };
-      for (const check of list) await runOne(viewport, check, page, shot);
+      for (const check of list) {
+        await page.goto(BASE, { waitUntil: "networkidle" });
+        await runOne(viewport, check, page, shot);
+      }
       await context.close();
     }
   }
