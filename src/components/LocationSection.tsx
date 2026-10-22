@@ -1,4 +1,5 @@
 import { ExternalLink, MapPin, Navigation as NavigationIcon } from "lucide-react";
+import finca from "../assets/finca.webp";
 import { wedding } from "../lib/weddingData";
 import { SectionHeading } from "./ui/SectionHeading";
 import { Reveal } from "./ui/Reveal";
@@ -6,7 +7,7 @@ import { ButtonLink } from "./ui/Button";
 
 export function LocationSection() {
   return (
-    <section id="ubicacio" className="bg-cream px-6 py-24">
+    <section id="ubicacio" className="bg-ivory px-6 py-24">
       <SectionHeading
         eyebrow="On serà"
         title="Ubicació"
@@ -14,22 +15,17 @@ export function LocationSection() {
       />
 
       <div className="mx-auto mt-14 grid max-w-5xl items-center gap-10 md:grid-cols-2">
-        <Reveal className="overflow-hidden rounded-sm border border-ink/10 shadow-sm">
-          <iframe
-            title="Mapa del lloc de la celebració"
-            src={wedding.mapEmbedSrc}
-            className="h-80 w-full grayscale-[15%] md:h-96"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
+        <Reveal>
+          <img src={finca} alt="Il·lustració de la finca" width={1200} height={799} className="w-full" loading="lazy" />
         </Reveal>
 
         <Reveal delay={120} className="text-center md:text-left">
-          <div className="mb-4 flex items-center justify-center gap-2 text-sage-700 md:justify-start">
+          <div className="mb-4 flex items-center justify-center gap-2 text-olive md:justify-start">
             <MapPin size={20} />
-            <span className="font-display text-2xl italic">{wedding.venueName}</span>
+            <span className="font-display text-2xl text-olive-dark italic">{wedding.venueName}</span>
           </div>
-          <p className="text-ink-light leading-relaxed">
+          <p className="font-sans text-olive-dark">{wedding.venueAddress}</p>
+          <p className="mt-4 leading-relaxed text-olive-dark">
             {wedding.venueName}, {wedding.venueLocation}. Un indret envoltat de natura, perfecte per
             celebrar-hi el nostre gran dia a l&apos;aire lliure.
           </p>

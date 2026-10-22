@@ -1,5 +1,5 @@
 export function Divider({ light = false }: { light?: boolean }) {
-  const stroke = light ? "#f0e9db" : "#bd9553";
+  const stroke = light ? "#FAF7F1" : "#787C69";
 
   return (
     <div className="mx-auto flex w-40 items-center justify-center gap-3 py-2" aria-hidden="true">

@@ -14,19 +14,19 @@ export function SectionHeading({ eyebrow, title, subtitle, light = false }: Sect
       {eyebrow && (
         <p
           className={`mb-3 font-sans text-xs font-medium tracking-[0.3em] uppercase ${
-            light ? "text-cream-dark" : "text-gold-dark"
+            light ? "text-ivory" : "text-olive-dark"
           }`}
         >
           {eyebrow}
         </p>
       )}
       <h2
-        className={`font-display text-4xl italic sm:text-5xl ${light ? "text-paper" : "text-ink"}`}
+        className={`font-display text-4xl italic sm:text-5xl ${light ? "text-ivory" : "text-olive-dark"}`}
       >
         {title}
       </h2>
       {subtitle && (
-        <p className={`mx-auto mt-4 max-w-xl text-balance ${light ? "text-cream-dark" : "text-ink-light"}`}>
+        <p className={`mx-auto mt-4 max-w-xl text-balance ${light ? "text-ivory" : "text-olive-dark"}`}>
           {subtitle}
         </p>
       )}

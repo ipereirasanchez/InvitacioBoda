@@ -4,9 +4,9 @@ const base =
   "inline-flex items-center justify-center gap-2 rounded-full px-8 py-3 font-sans text-xs font-medium tracking-[0.2em] uppercase transition-colors duration-300";
 
 const variants = {
-  solid: "bg-sage-600 text-cream hover:bg-sage-700",
-  outline: "border border-ink/30 text-ink hover:border-ink hover:bg-ink hover:text-cream",
-  "outline-light": "border border-cream/50 text-cream hover:bg-cream hover:text-ink",
+  solid: "bg-olive-dark text-ivory hover:bg-olive",
+  outline: "border border-olive-dark text-olive-dark hover:bg-olive-dark hover:text-ivory",
+  "outline-light": "border border-ivory/70 text-ivory hover:bg-ivory hover:text-olive-dark",
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
