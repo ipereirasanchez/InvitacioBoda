@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "check:ui": "npm run build && node scripts/ui-check.mjs"
+    "check:ui": "npm run build && node scripts/ui-check.mjs",
+    "assets:svg": "node scripts/optimize-svg.mjs",
+    "assets:webp": "bash scripts/make-webp.sh"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -24,6 +26,7 @@
     "@vitejs/plugin-react": "^6.1.0",
     "oxlint": "^1.79.0",
     "playwright-core": "^1.64.1",
+    "svgo": "^4.1.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.2",
     "vite-plugin-svgr": "^5.2.0"
