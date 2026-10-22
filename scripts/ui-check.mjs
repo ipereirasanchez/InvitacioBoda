@@ -5,7 +5,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "playwright-core";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const BASE = "http://localhost:4173/InvitacioBoda/";
+const PORT = process.env.UI_CHECK_PORT ?? "4173";
+const BASE = `http://localhost:${PORT}/InvitacioBoda/`;
 const CAPTURES = path.join(root, "docs", "captures");
 const VIEWPORTS = {
   desktop: { width: 1440, height: 900 },
@@ -27,7 +28,7 @@ async function loadChecks() {
 async function waitForServer() {
   const deadline = Date.now() + 20000;
   while (Date.now() < deadline) {
-    if (serverExited) throw new Error("vite preview ha sortit (port 4173 ocupat?)");
+    if (serverExited) throw new Error(`vite preview ha sortit (port ${PORT} ocupat?)`);
     try {
       const res = await fetch(BASE);
       if (res.status === 200) return;
@@ -63,7 +64,7 @@ if (!checks.length) {
   );
   process.exit(1);
 }
-const server = spawn("npx", ["vite", "preview", "--port", "4173", "--strictPort"], {
+const server = spawn("npx", ["vite", "preview", "--port", PORT, "--strictPort"], {
   cwd: root,
   stdio: "ignore",
   detached: true,
