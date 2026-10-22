@@ -23,6 +23,20 @@ async function revealSection(page, selector) {
   }, selector);
 }
 
+// Espera que window.scrollY deixi de canviar (scroll suau), fins a 2 s.
+async function waitScrollSettled(page) {
+  let prev = await page.evaluate(() => window.scrollY);
+  const deadline = Date.now() + 2000;
+  let stable = 0;
+  while (Date.now() < deadline) {
+    await page.waitForTimeout(100);
+    const y = await page.evaluate(() => window.scrollY);
+    stable = y === prev ? stable + 1 : 0;
+    if (stable >= 2) return;
+    prev = y;
+  }
+}
+
 async function handsParentPosition(page) {
   return page.evaluate((sel) => {
     const img = document.querySelector(sel);
@@ -61,21 +75,28 @@ export const checks = [
     run: async (page) => {
       await page.setViewportSize({ width: 1440, height: 700 });
       try {
-        await page.evaluate(() => {
-          const r = document.querySelector("#records");
-          window.scrollTo(0, r.getBoundingClientRect().top + window.scrollY - 300);
-        });
-        await page.waitForTimeout(300);
-        const r = await page.evaluate((sel) => {
-          const img = document.querySelector(sel);
-          if (!img) return null;
-          const b = img.getBoundingClientRect();
-          return { top: b.top, bottom: b.bottom, pos: getComputedStyle(img.parentElement).position };
-        }, HANDS);
-        assert(r, "no hi ha la imatge de les mans");
-        assert(r.top >= 0, `top de les mans: ${r.top}`);
-        assert(r.bottom <= 700, `bottom de les mans: ${r.bottom}`);
-        assert.equal(r.pos, "sticky", "el pare de les mans no és sticky");
+        const results = [];
+        for (const offset of [300, 450]) {
+          await page.evaluate((off) => {
+            const r = document.querySelector("#records");
+            const top = r.getBoundingClientRect().top + window.scrollY - off;
+            window.scrollTo({ top, behavior: "instant" });
+          }, offset);
+          await waitScrollSettled(page);
+          const r = await page.evaluate((sel) => {
+            const img = document.querySelector(sel);
+            if (!img) return null;
+            const b = img.getBoundingClientRect();
+            return { top: b.top, bottom: b.bottom, pos: getComputedStyle(img.parentElement).position };
+          }, HANDS);
+          assert(r, "no hi ha la imatge de les mans");
+          assert.equal(r.pos, "sticky", "el pare de les mans no és sticky");
+          assert(r.top >= 0, `#records-${offset}: top de les mans ${r.top}`);
+          assert(r.bottom <= 701, `#records-${offset}: bottom de les mans ${r.bottom}`);
+          assert(Math.abs(r.top - 96) <= 4, `#records-${offset}: top de les mans ${r.top}, s'esperava ≈ 96`);
+          results.push(r.top);
+        }
+        assert(Math.abs(results[0] - results[1]) <= 2, `les mans es mouen en fer scroll: ${results.join(" → ")}`);
       } finally {
         await page.setViewportSize({ width: 1440, height: 900 });
       }
@@ -95,7 +116,7 @@ export const checks = [
     viewports: ["desktop"],
     run: async (page) => {
       await page.locator("nav a", { hasText: /^\s*Records\s*$/ }).first().click();
-      await page.waitForTimeout(800);
+      await waitScrollSettled(page);
       const top = await page.evaluate(() => document.querySelector("#records")?.getBoundingClientRect().top);
       assert(top !== undefined, "no hi ha #records");
       assert(top >= 0 && top <= 200, `#records top després del clic: ${top}`);
