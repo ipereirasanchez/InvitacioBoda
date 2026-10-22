@@ -39,12 +39,21 @@ export const checks = [
     name: "fonts-loaded",
     viewports: ["desktop"],
     run: async (page) => {
-      await page.evaluate(() => document.fonts.ready);
-      const r = await page.evaluate(() => ({
-        manrope: document.fonts.check("16px Manrope"),
-        cormorant: document.fonts.check('16px "Cormorant Garamond"'),
-        links: [...document.querySelectorAll('link[href*="fonts.googleapis.com"]')].map((l) => l.href),
-      }));
+      const r = await page.evaluate(async () => {
+        await document.fonts.ready;
+        const loaded = (name) =>
+          [...document.fonts].some((f) => f.family.replace(/"/g, "") === name && f.status === "loaded");
+        return {
+          manrope: loaded("Manrope"),
+          cormorant: loaded("Cormorant Garamond"),
+          links: [...document.querySelectorAll('link[href*="fonts.googleapis.com"]')].map((l) => l.href),
+        };
+      });
+      assert(r.links.length > 0, "no hi ha cap <link> de Google Fonts");
+      assert(
+        r.links.some((h) => h.includes("family=Cormorant+Garamond") && h.includes("family=Manrope")),
+        `cap enllaç de fonts inclou Cormorant Garamond i Manrope: ${r.links.join(" ")}`,
+      );
       assert(r.manrope, "Manrope no carregada");
       assert(r.cormorant, "Cormorant Garamond no carregada");
       for (const href of r.links) {
@@ -63,15 +72,16 @@ export const checks = [
       try {
         await page.goto(base, { waitUntil: "load" });
         const r = await page.evaluate(() => {
-          const h1 = document.querySelector("h1");
+          const h2 = document.querySelector("h2");
           return {
             len: document.body.innerText.length,
-            h1Font: h1 ? getComputedStyle(h1).fontFamily : null,
+            h2Font: h2 ? getComputedStyle(h2).fontFamily : null,
           };
         });
         assert(r.len > 200, `poc text visible sense fonts: ${r.len}`);
-        assert(r.h1Font, "no hi ha cap h1");
-        assert(r.h1Font.includes("serif"), `font de l'h1 sense serif: ${r.h1Font}`);
+        assert(r.h2Font, "no hi ha cap h2");
+        assert(/Cormorant Garamond|Georgia/.test(r.h2Font), `font de l'h2 sense Cormorant/Georgia: ${r.h2Font}`);
+        assert(/(^|,\s*)serif\s*$/.test(r.h2Font), `font de l'h2 no acaba en serif: ${r.h2Font}`);
       } finally {
         await page.unroute("**/fonts.googleapis.com/**", block);
       }
