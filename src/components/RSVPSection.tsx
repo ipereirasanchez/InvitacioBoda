@@ -3,6 +3,7 @@ import { type FormEvent, useState } from "react";
 import { SectionHeading } from "./ui/SectionHeading";
 import { Reveal } from "./ui/Reveal";
 import { Button } from "./ui/Button";
+import { wedding } from "../lib/weddingData";
 
 type Attendance = "si" | "no";
 type Transport = "propi" | "bus";
@@ -28,8 +29,8 @@ const initialForm: RSVPForm = {
 };
 
 const inputClasses =
-  "w-full rounded-sm border border-ink/15 bg-paper px-4 py-3 text-ink placeholder:text-ink-light/60 focus:border-sage-500 focus:outline-none";
-const labelClasses = "mb-2 block font-sans text-xs font-medium tracking-[0.15em] text-ink uppercase";
+  "w-full rounded-sm border border-sage-grey bg-ivory px-4 py-3 text-olive-dark placeholder:text-olive/60 focus:border-olive focus:outline-none";
+const labelClasses = "mb-2 block font-sans text-xs font-medium tracking-[0.15em] text-olive-dark uppercase";
 
 export function RSVPSection() {
   const [form, setForm] = useState<RSVPForm>(initialForm);
@@ -47,29 +48,29 @@ export function RSVPSection() {
   }
 
   return (
-    <section id="rsvp" className="bg-sage-700 px-6 py-24">
+    <section id="rsvp" className="bg-olive px-6 py-24">
       <SectionHeading
         eyebrow="Confirmació d'assistència"
         title="RSVP"
-        subtitle="Confirmeu-nos abans del 15 d'abril de 2030 si hi podreu ser. Ens fa molta il·lusió comptar amb vosaltres."
+        subtitle={`Confirmeu-nos abans del ${wedding.rsvpDeadline} si hi podreu ser. Ens fa molta il·lusió comptar amb vosaltres.`}
         light
       />
 
       <Reveal delay={120} className="mx-auto mt-12 max-w-xl">
         {sent ? (
-          <div className="flex flex-col items-center gap-3 rounded-sm bg-paper px-8 py-14 text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-sage-100 text-sage-700">
+          <div className="flex flex-col items-center gap-3 rounded-sm bg-ivory px-8 py-14 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-beige text-olive">
               <Check size={22} />
             </span>
-            <h3 className="font-display text-2xl text-ink italic">Gràcies, {form.nom.split(" ")[0] || ""}!</h3>
-            <p className="text-ink-light max-w-sm">
+            <h3 className="font-display text-2xl text-olive-dark italic">Gràcies, {form.nom.split(" ")[0] || ""}!</h3>
+            <p className="max-w-sm text-olive-dark/80">
               {attending
                 ? "Hem rebut la teva confirmació. Ens fa molta il·lusió celebrar-ho amb tu!"
                 : "Gràcies per fer-nos-ho saber, et trobarem a faltar aquell dia."}
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="rounded-sm bg-paper p-6 sm:p-10">
+          <form onSubmit={handleSubmit} className="rounded-sm bg-ivory p-6 sm:p-10">
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className={labelClasses} htmlFor="nom">
@@ -114,8 +115,8 @@ export function RSVPSection() {
                       onClick={() => update("assistencia", value)}
                       className={`rounded-sm border px-4 py-3 text-sm font-medium transition-colors ${
                         form.assistencia === value
-                          ? "border-sage-600 bg-sage-600 text-cream"
-                          : "border-ink/15 text-ink-light hover:border-sage-400"
+                          ? "border-olive bg-olive text-ivory"
+                          : "border-sage-grey text-olive-dark/80 hover:border-olive"
                       }`}
                     >
                       {text}
@@ -149,13 +150,13 @@ export function RSVPSection() {
                           ["bus", "Utilitzaré el bus"],
                         ] as const
                       ).map(([value, text]) => (
-                        <label key={value} className="flex items-center gap-2 text-sm text-ink">
+                        <label key={value} className="flex items-center gap-2 text-sm text-olive-dark">
                           <input
                             type="radio"
                             name="transport"
                             checked={form.transport === value}
                             onChange={() => update("transport", value)}
-                            className="accent-sage-600"
+                            className="accent-olive"
                           />
                           {text}
                         </label>
