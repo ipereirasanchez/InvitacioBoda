@@ -14,6 +14,15 @@ function tsxFiles(dir) {
 
 export const checks = [
   {
+    name: "favicon-shape",
+    viewports: ["node"],
+    run: async () => {
+      const svg = readFileSync(path.join(root, "public", "favicon.svg"), "utf8");
+      assert(!svg.includes("currentColor"), "favicon.svg conté currentColor");
+      assert(svg.includes("#515449"), "favicon.svg no conté #515449");
+    },
+  },
+  {
     name: "no-horizontal-overflow",
     viewports: ["desktop", "mobile"],
     run: async (page) => {
