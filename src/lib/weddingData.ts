@@ -1,24 +1,28 @@
-// Dades de la invitació. Substituïu els valors d'exemple pels vostres.
+// Dades de la invitació.
 export const wedding = {
-  brideAndGroom: "Nom & Nom",
-  bride: "Nom Cognom Cognom",
-  groom: "Nom Cognom Cognom",
+  bride: "Xisca",
+  groom: "Ivan",
+  // Es retira a la Tasca 7.
+  brideAndGroom: "Xisca & Ivan",
   // Data i hora de la cerimònia.
-  date: new Date("2030-06-15T17:00:00"),
+  date: new Date("2027-04-10T17:00:00"),
   dayLabel: "Dissabte",
-  dateLabel: "15 de juny de 2030",
+  dateLabel: "10 d'abril de 2027",
+  dateShort: "10-04-2027",
   venueName: "Nom del lloc",
-  venueLocation: "Ciutat, País",
+  venueLocation: "Ciutat, Mallorca",
+  venueAddress: "Carrer d'exemple, 1 · 07000 Ciutat, Mallorca",
   venueInstagram: "https://www.instagram.com/",
-  mapEmbedSrc: "https://www.google.com/maps?q=Espanya&output=embed",
-  mapLinkHref: "https://www.google.com/maps/search/?api=1&query=Espanya",
+  mapLinkHref: "https://www.google.com/maps/search/?api=1&query=Nom+del+lloc",
+  // Es retira a la Tasca 7.
+  mapEmbedSrc: "https://www.google.com/maps?q=Mallorca&output=embed",
+  rsvpDeadline: "10 de març de 2027",
 } as const;
 
 export const navLinks = [
   { href: "#inici", label: "Inici" },
   { href: "#historia", label: "La nostra història" },
-  { href: "#galeria", label: "Galeria" },
+  { href: "#records", label: "Records" },
   { href: "#ubicacio", label: "Ubicació" },
-  { href: "#coses-per-fer", label: "Coses per fer" },
   { href: "#faq", label: "Preguntes freqüents" },
 ] as const;
