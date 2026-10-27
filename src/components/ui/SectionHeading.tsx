@@ -1,16 +1,15 @@
 import type { ReactNode } from "react";
 import { Reveal } from "./Reveal";
+import { Divider } from "./Divider";
 
 interface SectionHeadingProps {
   eyebrow?: string;
   title: string;
   subtitle?: ReactNode;
   light?: boolean;
-  /** Ornament (senefa) sota el títol. */
-  ornament?: ReactNode;
 }
 
-export function SectionHeading({ eyebrow, title, subtitle, light = false, ornament }: SectionHeadingProps) {
+export function SectionHeading({ eyebrow, title, subtitle, light = false }: SectionHeadingProps) {
   return (
     <Reveal className="relative mx-auto max-w-2xl text-center">
       {eyebrow && (
@@ -27,9 +26,9 @@ export function SectionHeading({ eyebrow, title, subtitle, light = false, orname
       >
         {title}
       </h2>
-      {ornament}
+      <Divider light={light} />
       {subtitle && (
-        <p className={`mx-auto mt-4 max-w-xl text-balance ${light ? "text-ivory" : "text-olive-dark"}`}>
+        <p className={`mx-auto mt-2 max-w-xl text-balance ${light ? "text-ivory" : "text-olive-dark"}`}>
           {subtitle}
         </p>
       )}

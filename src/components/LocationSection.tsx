@@ -33,15 +33,15 @@ export function LocationSection() {
 
       {/* Mòbil: la finca queda darrere del text, com a fons. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-24 flex justify-center md:hidden">
-        <img src={finca} alt="" width={1200} height={799} className="w-[110vw] max-w-none opacity-30" loading="lazy" />
+        <img src={finca} alt="" width={1200} height={760} className="w-[110vw] max-w-none opacity-30" loading="lazy" />
       </div>
 
       <div className="relative">
         <SectionHeading title="On serà" />
 
-        <div className="mx-auto mt-10 grid max-w-6xl items-center gap-8 md:mt-14 md:grid-cols-[7fr_5fr] md:gap-12">
+        <div className="mx-auto mt-10 grid max-w-7xl items-center gap-8 md:mt-14 md:grid-cols-[2fr_1fr] md:gap-10 lg:gap-14">
           <Reveal variant="scale" className="hidden md:block">
-            <img src={finca} alt={FINCA_ALT} width={1200} height={799} className="w-full" loading="lazy" />
+            <img src={finca} alt={FINCA_ALT} width={1200} height={760} className="w-full" loading="lazy" />
           </Reveal>
 
           <div className="text-center md:text-left">
@@ -50,17 +50,10 @@ export function LocationSection() {
                 <MapPin size={22} />
                 <span className="font-display text-3xl font-bold text-olive-dark italic">{wedding.venueName}</span>
               </div>
-              <p className="mt-3 font-sans font-semibold text-olive-dark">{wedding.venueAddress}</p>
-              <p className="mt-1 font-sans text-sm text-olive-dark">{wedding.venueLocation}</p>
+              <p className="mt-3 font-sans text-lg font-semibold text-olive-dark">{wedding.venueAddress}</p>
+              <p className="mt-1 font-sans text-olive-dark">{wedding.venueLocation}</p>
             </Reveal>
             <Reveal delay={120}>
-              <p className="mt-5 leading-relaxed text-olive-dark">
-                La cerimònia i el convit tindran lloc a <strong>{wedding.venueName}</strong>, a Bunyola, al peu de
-                la Serra de Tramuntana: un indret envoltat de natura, perfecte per celebrar-hi el nostre gran dia
-                a l&apos;aire lliure.
-              </p>
-            </Reveal>
-            <Reveal delay={240}>
               <div className="mt-8 flex flex-wrap justify-center gap-4 md:justify-start">
                 <ButtonLink href={wedding.mapLinkHref} target="_blank" rel="noreferrer" variant="solid">
                   <NavigationIcon size={14} />

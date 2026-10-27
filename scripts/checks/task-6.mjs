@@ -74,10 +74,34 @@ export const checks = [
         all: document.body.textContent,
       }));
       assert.equal(s.bg, "rgb(120, 124, 105)", "fons de #rsvp");
+      const bgImage = await page.evaluate(() => getComputedStyle(document.querySelector("#rsvp")).backgroundImage);
+      assert(/gradient/.test(bgImage), `#rsvp no té degradat de fons: ${bgImage}`);
+      const senefes = await page.locator("#rsvp [data-senefa]").count();
+      assert(senefes >= 2, `#rsvp té ${senefes} senefes (mínim 2)`);
       assert(s.text.includes("Confirmeu-nos abans del 10 de març de 2027"), "subtítol RSVP");
       assert.equal(s.formBg, "rgb(250, 247, 241)", "fons del formulari");
       // "Ma-2030" és la carretera; cap any 2030 de mostra.
       assert(!/\b2030\b/.test(s.all.replace(/Ma-2030/g, "")), "la pàgina conté l'any 2030");
+    },
+  },
+  {
+    // El separador sota el títol és el mateix a totes les seccions (el de "La nostra història").
+    name: "section-dividers",
+    viewports: ["desktop"],
+    run: async (page) => {
+      const r = await page.evaluate(() =>
+        ["#historia", "#ubicacio", "#faq", "#rsvp"].map((id) => {
+          const h2 = document.querySelector(`${id} h2`);
+          const next = h2?.nextElementSibling;
+          const div = next?.matches("[data-divider]") ? next : next?.querySelector("[data-divider]");
+          return { id, ok: !!div, html: div?.innerHTML.replace(/\s+/g, " ") ?? null, senefa: !!h2?.parentElement.querySelector("[data-senefa]") };
+        }),
+      );
+      for (const s of r) {
+        assert(s.ok, `${s.id}: el títol no va seguit del separador`);
+        assert(!s.senefa, `${s.id}: la capçalera encara porta una senefa`);
+        assert.equal(s.html, r[0].html, `${s.id}: el separador és diferent del de #historia`);
+      }
     },
   },
 ];

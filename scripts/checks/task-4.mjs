@@ -20,12 +20,13 @@ export const checks = [
         "10-04-2027",
         "Confirma l'assistència",
         "Son Muntaner",
-        "Ma-2030, 07193 Bunyola",
+        "Bunyola, Mallorca",
         "Després de deu anys compartint moments i aventures, hem decidit fer un pas més i casar-nos, i ens faria molta il·lusió que ens acompanyassis a celebrar-ho.",
       ]) {
         assert(text.includes(t), `#inici no conté "${t}"`);
       }
       assert(!text.includes("Junts amb les nostres famílies"), '#inici encara conté "Junts amb les nostres famílies"');
+      assert(!text.includes("Ma-2030"), "#inici encara conté l'adreça");
       // La frase nova va just sota els noms (abans del botó).
       assert(text.indexOf("Xisca") < text.indexOf("Després de deu anys"), "la frase nova no és sota els noms");
       assert(text.indexOf("Després de deu anys") < text.indexOf("Confirma l'assistència"), "la frase nova és després del botó");
@@ -75,6 +76,8 @@ export const checks = [
     viewports: ["desktop"],
     run: async (page, { shot }) => {
       assert.equal(await page.locator('header[data-scrolled="false"]').count(), 1, "a dalt, header no és data-scrolled=false");
+      const bgTop = await page.locator("header").evaluate((el) => getComputedStyle(el).backgroundColor);
+      assert.equal(bgTop, "rgba(0, 0, 0, 0)", `a escriptori la capçalera ha de ser transparent a dalt: ${bgTop}`);
       const logo = page.locator('header a[aria-label="Inici"] svg[data-logo="simple"]');
       assert.equal(await logo.count(), 1, 'falta svg[data-logo="simple"] dins a[aria-label="Inici"]');
       assert(!(await logo.isVisible()), "el logo simple és visible a dalt de tot");
@@ -87,6 +90,22 @@ export const checks = [
       const text = await page.evaluate(() => document.body.textContent);
       assert(!text.includes("X & I"), 'la pàgina encara conté "X & I"');
       await shot("nav-scrolled", { fullPage: false });
+    },
+  },
+  {
+    // A mòbil la barra del menú és clara (i amb el logo) des del principi, sense fer scroll.
+    name: "nav-mobile-solid-from-start",
+    viewports: ["mobile"],
+    run: async (page) => {
+      assert.equal(await page.locator('header[data-scrolled="false"]').count(), 1, "a dalt, header no és data-scrolled=false");
+      const bg = await page.locator("header").evaluate((el) => getComputedStyle(el).backgroundColor);
+      // Tailwind calcula ivory/95 amb color-mix i Chrome ho retorna en oklab: n'hi ha prou que no sigui transparent.
+      assert.notEqual(bg, "rgba(0, 0, 0, 0)", "a mòbil la capçalera ha de ser clara a dalt de tot");
+      assert(/\/ ?0\.95\)|, 0\.95\)/.test(bg), `fons de la capçalera a dalt (mòbil) sense alfa 0,95: ${bg}`);
+      const logo = page.locator('header a[aria-label="Inici"] svg[data-logo="simple"]');
+      assert(await logo.isVisible(), "el logo simple no és visible a dalt de tot (mòbil)");
+      const op = await logo.evaluate((el) => getComputedStyle(el.closest("a")).opacity);
+      assert.equal(op, "1", `opacitat del logo a dalt (mòbil): ${op}`);
     },
   },
   {

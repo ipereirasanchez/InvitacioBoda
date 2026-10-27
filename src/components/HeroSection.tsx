@@ -59,7 +59,7 @@ export function HeroSection() {
               {wedding.dateShort}
             </p>
             <p className="mt-2 font-sans text-sm text-olive-dark">
-              <span className="font-bold">{wedding.venueName}</span>, {wedding.venueAddress}
+              <span className="font-bold">{wedding.venueName}</span> · {wedding.venueLocation}
             </p>
           </motion.div>
 

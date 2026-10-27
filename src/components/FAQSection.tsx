@@ -48,12 +48,7 @@ export function FAQSection() {
       />
 
       <div className="relative">
-        <SectionHeading
-          title="Preguntes freqüents"
-          ornament={
-            <Senefa n={4} className="mx-auto mt-2 w-44 text-olive opacity-80 sm:w-56" />
-          }
-        />
+        <SectionHeading title="Preguntes freqüents" />
 
         <div className="mx-auto mt-10 grid max-w-5xl auto-rows-fr gap-6 sm:grid-cols-2">
           {FAQS.map((faq, i) => {

@@ -3,6 +3,7 @@ import { type FormEvent, useState } from "react";
 import { SectionHeading } from "./ui/SectionHeading";
 import { Reveal } from "./ui/Reveal";
 import { Button } from "./ui/Button";
+import { Senefa } from "./ui/Senefa";
 import { wedding } from "../lib/weddingData";
 
 type Attendance = "si" | "no";
@@ -48,7 +49,24 @@ export function RSVPSection() {
   }
 
   return (
-    <section id="rsvp" className="bg-olive px-6 py-24">
+    <section
+      id="rsvp"
+      className="relative overflow-clip bg-olive bg-gradient-to-b from-olive via-olive to-olive-dark px-6 py-24"
+    >
+      {/* Senefes de fons en to clar, molt subtils perquè el formulari sigui el protagonista. */}
+      <Senefa
+        n={5}
+        className="absolute -top-8 -left-10 w-[48vw] text-ivory opacity-15 md:-top-4 md:left-0 md:w-[18vw] md:max-w-xs md:opacity-20"
+      />
+      <Senefa
+        n={6}
+        className="absolute -right-8 -bottom-6 w-[48vw] text-ivory opacity-15 md:-right-2 md:bottom-0 md:w-[18vw] md:max-w-xs md:opacity-20"
+      />
+      <Senefa
+        n={4}
+        className="absolute bottom-2 left-1/2 w-[70vw] -translate-x-1/2 text-ivory opacity-10 md:hidden"
+      />
+
       <SectionHeading
         eyebrow="Confirmació d'assistència"
         title="RSVP"
@@ -56,7 +74,7 @@ export function RSVPSection() {
         light
       />
 
-      <Reveal delay={120} className="mx-auto mt-12 max-w-xl">
+      <Reveal delay={120} className="relative mx-auto mt-12 max-w-xl">
         {sent ? (
           <div className="flex flex-col items-center gap-3 rounded-sm bg-ivory px-8 py-14 text-center">
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-beige text-olive">

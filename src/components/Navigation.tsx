@@ -14,22 +14,22 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // A mòbil la barra és sempre clara (i mostra el logo); a escriptori només després de fer scroll.
   const solid = scrolled || open;
 
   return (
     <header
       data-scrolled={scrolled ? "true" : "false"}
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-500 ${
-        solid ? "bg-ivory/95 shadow-sm backdrop-blur-sm" : "bg-transparent"
+        solid ? "bg-ivory/95 shadow-sm backdrop-blur-sm" : "bg-ivory/95 shadow-sm backdrop-blur-sm md:bg-transparent md:shadow-none md:backdrop-blur-none"
       }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3 sm:px-10">
         <a
           href="#inici"
           aria-label="Inici"
-          tabIndex={scrolled ? undefined : -1}
           className={`transition-[opacity,visibility] duration-300 ${
-            scrolled ? "visible opacity-100" : "pointer-events-none invisible opacity-0"
+            scrolled ? "visible opacity-100" : "md:pointer-events-none md:invisible md:opacity-0"
           }`}
         >
           <LogoSimple data-logo="simple" aria-hidden="true" className="h-9 w-auto text-olive-dark" />

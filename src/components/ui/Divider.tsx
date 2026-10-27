@@ -3,6 +3,7 @@ export function Divider({ light = false }: { light?: boolean }) {
     <div
       className={`mx-auto flex w-40 items-center justify-center gap-3 py-2 ${light ? "text-ivory" : "text-olive"}`}
       aria-hidden="true"
+      data-divider
     >
       <span className="h-px flex-1 bg-current opacity-60" />
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">

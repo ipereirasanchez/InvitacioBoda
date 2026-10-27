@@ -169,7 +169,7 @@ export const checks = [
   {
     name: "location",
     viewports: ["desktop", "mobile"],
-    run: async (page, { shot }) => {
+    run: async (page, { viewport, shot }) => {
       assert.equal(await page.locator(FINCA).count(), 1, "falta la il·lustració de la finca");
       assert.equal(await page.locator("iframe").count(), 0, "encara hi ha un iframe");
       const text = await page.locator("#ubicacio").textContent();
@@ -180,6 +180,13 @@ export const checks = [
       assert(!text.includes("Ubicació"), '#ubicacio encara conté "Ubicació"');
       assert(!text.includes("al mateix indret"), "#ubicacio encara té el subtítol antic");
       assert(!text.includes("Carrer d'exemple"), "#ubicacio encara té l'adreça d'exemple");
+      assert(!text.includes("Serra de Tramuntana"), "#ubicacio encara té el text descriptiu");
+      assert(!text.includes("La cerimònia i el convit"), "#ubicacio encara té el text descriptiu");
+      if (viewport === "desktop") {
+        // La il·lustració ocupa dos terços de l'amplada (abans, poc més de la meitat).
+        const w = (await page.locator(FINCA).boundingBox()).width;
+        assert(w >= 700, `amplada de la il·lustració de la finca a escriptori: ${w}`);
+      }
       const venue = await page.evaluate(() => {
         const el = [...document.querySelectorAll("#ubicacio span, #ubicacio strong")].find(
           (e) => e.textContent.trim() === "Son Muntaner",
@@ -187,16 +194,19 @@ export const checks = [
         return el && Number(getComputedStyle(el).fontWeight);
       });
       assert(venue >= 700, `el nom del lloc no és en negreta: ${venue}`);
+      const link = page.locator(`a[href="${MAP_HREF}"]`);
+      assert(await link.count() >= 1, "falta l'enllaç del mapa");
+      assert((await link.first().textContent()).includes("Com arribar-hi"), "l'enllaç no diu 'Com arribar-hi'");
+      // Es recorre la secció abans d'esperar la marca: és loading="lazy" i no es carrega fins que entra en pantalla.
+      const clip = await revealSection(page, "#ubicacio");
       const marca = page.locator("#ubicacio [data-marca-aquarela]");
       assert.equal(await marca.count(), 1, "falta la marca d'aquarel·la a #ubicacio");
       const blend = await marca.evaluate((el) => getComputedStyle(el).mixBlendMode);
       assert.equal(blend, "luminosity", `mix-blend-mode de la marca d'aquarel·la: ${blend}`);
-      await marca.evaluate((el) => (el.complete ? null : new Promise((r) => el.addEventListener("load", r, { once: true }))));
+      await marca.evaluate((el) =>
+        el.complete ? null : Promise.race([new Promise((r) => el.addEventListener("load", r, { once: true })), new Promise((r) => setTimeout(r, 5000))]),
+      );
       assert((await marca.evaluate((el) => el.naturalWidth)) > 0, "la marca d'aquarel·la no es carrega");
-      const link = page.locator(`a[href="${MAP_HREF}"]`);
-      assert(await link.count() >= 1, "falta l'enllaç del mapa");
-      assert((await link.first().textContent()).includes("Com arribar-hi"), "l'enllaç no diu 'Com arribar-hi'");
-      const clip = await revealSection(page, "#ubicacio");
       await shot("ubicacio", { clip });
     },
   },
