@@ -16,7 +16,7 @@ export function Footer() {
       <p className="font-sans text-xs tracking-[0.2em] text-ivory/80 uppercase">
         {wedding.dayLabel}, {wedding.dateLabel} · {wedding.venueName}, {wedding.venueLocation}
       </p>
-      <p className="mt-6 font-sans text-[11px] text-ivory/70">Fet amb amor per a la nostra boda.</p>
+      <p className="mt-6 font-sans text-[11px] text-ivory/70">Il·lustració i disseny: Àlex Basterra Tost</p>
     </footer>
   );
 }
