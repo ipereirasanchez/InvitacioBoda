@@ -28,8 +28,6 @@ Seguirà les seccions amb els colors de la paleta, i les seccions que quedaran s
 
 La idea és seguir el disseny fet en src/assets/portada.png. Fixa't que hi ha un logo que entremescla les dues inicials nostres (src/assets/logo.svg). En aquesta portada hauràs d'incloure la imatge src/assets/noltros.PNG. També hi ha unes senefas florals que esten en src/assets/senafa_floral 1.svg i src/assets/senefa_floral 2.svg
 
-
-
 ### La nostra història i records
 
 En les dues següens seccions m'agradaria que la l'ilustració (ssrc/assets/mans.PNG) ocupi el que fins ara eren dues seccions en gros. El que abans eren dues seccions s'unificarà, tenint en comú la il·lustració de les mans.

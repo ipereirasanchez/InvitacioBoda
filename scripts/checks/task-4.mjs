@@ -16,8 +16,33 @@ export const checks = [
       assert(nw > 0, `naturalWidth de la il·lustració: ${nw}`);
       assert.equal(await page.locator('svg[data-logo="main"]').count(), 1, 'falta svg[data-logo="main"]');
       const text = await page.locator("#inici").textContent();
-      for (const t of ["Junts amb les nostres famílies", "10-04-2027", "Confirma l'assistència"]) {
+      for (const t of [
+        "10-04-2027",
+        "Confirma l'assistència",
+        "Son Muntaner",
+        "Ma-2030, 07193 Bunyola",
+        "Després de deu anys compartint moments i aventures, hem decidit fer un pas més i casar-nos, i ens faria molta il·lusió que ens acompanyassis a celebrar-ho.",
+      ]) {
         assert(text.includes(t), `#inici no conté "${t}"`);
+      }
+      assert(!text.includes("Junts amb les nostres famílies"), '#inici encara conté "Junts amb les nostres famílies"');
+      // La frase nova va just sota els noms (abans del botó).
+      assert(text.indexOf("Xisca") < text.indexOf("Després de deu anys"), "la frase nova no és sota els noms");
+      assert(text.indexOf("Després de deu anys") < text.indexOf("Confirma l'assistència"), "la frase nova és després del botó");
+      const amp = await h1.evaluate((el) => {
+        const span = [...el.querySelectorAll("span")].find((s) => s.textContent.trim() === "&");
+        return span && { h1: getComputedStyle(el).fontStyle, amp: getComputedStyle(span).fontStyle };
+      });
+      assert(amp, "el & de l'h1 no és dins un span propi");
+      assert.equal(amp.h1, "italic", "l'h1 no és en cursiva");
+      assert.equal(amp.amp, "normal", "el & és en cursiva");
+      // Les dues senefes han de ser visibles (també a mòbil).
+      for (const n of [1, 2]) {
+        const s = page.locator(`#inici [data-senefa="${n}"]`);
+        assert.equal(await s.count(), 1, `falta la senefa ${n} a #inici`);
+        assert(await s.isVisible(), `la senefa ${n} no és visible`);
+        const m = await s.evaluate((el) => getComputedStyle(el).maskImage || getComputedStyle(el).webkitMaskImage);
+        assert(/url\(/.test(m), `la senefa ${n} no té mask-image: ${m}`);
       }
       await page.waitForTimeout(1300);
       await shot("hero", { fullPage: false });

@@ -56,6 +56,8 @@ export const checks = [
       for (const file of tsxFiles(path.join(root, "src"))) {
         const src = readFileSync(file, "utf8");
         for (const re of tsxBad) assert(!re.test(src), `${path.relative(root, file)} conté ${re}`);
+        // Cap color hardcoded: tot passa per les variables de la paleta.
+        assert(!/#[0-9a-f]{3,8}\b/i.test(src.replace(/href=["'][^"']*["']/g, "")), `${path.relative(root, file)} conté un color hex`);
       }
       const data = readFileSync(path.join(root, "src", "lib", "weddingData.ts"), "utf8");
       assert(!/brideAndGroom|mapEmbedSrc/.test(data), "weddingData.ts conté camps retirats");
@@ -66,7 +68,7 @@ export const checks = [
     viewports: ["desktop"],
     run: async (page) => {
       const c = await page.evaluate(() => {
-        const eyebrow = document.querySelector("#faq p");
+        const eyebrow = document.querySelector("#faq h3");
         const story = [...document.querySelectorAll("#historia p")].find((p) =>
           p.textContent.trim().startsWith("Aquest és el lloc"),
         );

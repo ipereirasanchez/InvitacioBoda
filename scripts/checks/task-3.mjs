@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-const NAV_LABELS = ["Inici", "La nostra història", "Records", "Ubicació", "Preguntes freqüents"];
+const NAV_LABELS = ["Inici", "La nostra història", "On serà", "Preguntes freqüents"];
 const unquote = (s) => s.replace(/["']/g, "");
 
 async function scrollToBottom(page) {
@@ -41,11 +41,15 @@ export const checks = [
     run: async (page) => {
       const r = await page.evaluate(async () => {
         await document.fonts.ready;
-        const loaded = (name) =>
-          [...document.fonts].some((f) => f.family.replace(/"/g, "") === name && f.status === "loaded");
+        const loaded = (name, weight) =>
+          [...document.fonts].some(
+            (f) => f.family.replace(/"/g, "") === name && f.status === "loaded" && (!weight || f.weight === weight),
+          );
         return {
           manrope: loaded("Manrope"),
           cormorant: loaded("Cormorant Garamond"),
+          manropeBold: loaded("Manrope", "700"),
+          cormorantBold: loaded("Cormorant Garamond", "700"),
           links: [...document.querySelectorAll('link[href*="fonts.googleapis.com"]')].map((l) => l.href),
         };
       });
@@ -56,6 +60,8 @@ export const checks = [
       );
       assert(r.manrope, "Manrope no carregada");
       assert(r.cormorant, "Cormorant Garamond no carregada");
+      assert(r.manropeBold, "Manrope 700 no carregada");
+      assert(r.cormorantBold, "Cormorant Garamond 700 no carregada");
       for (const href of r.links) {
         assert(!href.includes("Jost"), `enllaç de fonts conté Jost: ${href}`);
         assert(!href.includes("Parisienne"), `enllaç de fonts conté Parisienne: ${href}`);
@@ -97,8 +103,11 @@ export const checks = [
       }
       await scrollToBottom(page);
       await page.waitForTimeout(800);
+      // Es descarten els Reveal que no es mostren en aquest viewport (display:none, p. ex. columnes només d'escriptori).
       const ops = await page.evaluate(() =>
-        [...document.querySelectorAll("[data-reveal]")].map((el) => getComputedStyle(el).opacity),
+        [...document.querySelectorAll("[data-reveal]")]
+          .filter((el) => el.getClientRects().length > 0)
+          .map((el) => getComputedStyle(el).opacity),
       );
       assert(ops.length > 0, "no hi ha cap [data-reveal]");
       const bad = ops.filter((o) => o !== "1");
@@ -120,6 +129,9 @@ export const checks = [
       assert.deepEqual(labels, NAV_LABELS);
       const text = await page.evaluate(() => document.body.textContent.toLowerCase());
       assert(!text.includes("coses per fer"), "la pàgina encara conté 'Coses per fer'");
+      const nav = await page.evaluate(() => document.querySelector("nav").textContent);
+      assert(!nav.includes("Records"), "la navegació encara conté 'Records'");
+      assert(!nav.includes("Ubicació"), "la navegació encara conté 'Ubicació'");
     },
   },
 ];

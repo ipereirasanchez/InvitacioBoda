@@ -6,11 +6,13 @@ interface SectionHeadingProps {
   title: string;
   subtitle?: ReactNode;
   light?: boolean;
+  /** Ornament (senefa) sota el títol. */
+  ornament?: ReactNode;
 }
 
-export function SectionHeading({ eyebrow, title, subtitle, light = false }: SectionHeadingProps) {
+export function SectionHeading({ eyebrow, title, subtitle, light = false, ornament }: SectionHeadingProps) {
   return (
-    <Reveal className="mx-auto max-w-2xl text-center">
+    <Reveal className="relative mx-auto max-w-2xl text-center">
       {eyebrow && (
         <p
           className={`mb-3 font-sans text-xs font-medium tracking-[0.3em] uppercase ${
@@ -25,6 +27,7 @@ export function SectionHeading({ eyebrow, title, subtitle, light = false }: Sect
       >
         {title}
       </h2>
+      {ornament}
       {subtitle && (
         <p className={`mx-auto mt-4 max-w-xl text-balance ${light ? "text-ivory" : "text-olive-dark"}`}>
           {subtitle}

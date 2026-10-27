@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, AnchorHTMLAttributes, ReactNode } from "react";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full px-8 py-3 font-sans text-xs font-medium tracking-[0.2em] uppercase transition-colors duration-300";
+  "inline-flex items-center justify-center gap-2 rounded-full px-8 py-3 font-sans text-xs font-semibold tracking-[0.2em] uppercase transition-[color,background-color,border-color,transform,box-shadow] duration-300 ease-out motion-safe:hover:-translate-y-0.5 hover:shadow-md hover:shadow-olive-dark/15";
 
 const variants = {
   solid: "bg-olive-dark text-ivory hover:bg-olive",

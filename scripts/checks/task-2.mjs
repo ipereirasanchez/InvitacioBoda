@@ -7,9 +7,9 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", ".
 const SRC = path.join(root, "src", "assets");
 const DIST = path.join(root, "dist", "assets");
 
-const SVGS = ["logo", "logo-simple", "senefa-floral-1", "senefa-floral-2"];
-const MONO = ["logo-simple", "senefa-floral-1", "senefa-floral-2"];
-const WEBPS = ["noltros", "mans", "finca"];
+const SVGS = ["logo", "logo-simple", ...[1, 2, 3, 4, 5, 6].map((n) => `senefa-floral-${n}`)];
+const MONO = SVGS.filter((n) => n !== "logo");
+const WEBPS = ["noltros", "mans", "finca", "marca-aquarela"];
 
 export const checks = [
   {
@@ -33,11 +33,16 @@ export const checks = [
         assert(!src.includes("Capa_1"), `${name}.svg conté Capa_1`);
         assert(!src.includes(".st0"), `${name}.svg conté .st0`);
         assert(!/\swidth="/.test(src.slice(0, 300)), `${name}.svg té width`);
+        assert(!src.includes("<image"), `${name}.svg conté una imatge incrustada`);
+        assert(!src.includes("INICI"), `${name}.svg conté el text INICI`);
         if (MONO.includes(name)) {
           assert(src.includes("currentColor"), `${name}.svg no usa currentColor`);
           assert(!/#[0-9a-f]{6}/i.test(src), `${name}.svg conserva un color hex`);
         }
       }
+      const ratios = JSON.parse(readFileSync(path.join(SRC, "svg-ratios.json"), "utf8"));
+      for (const name of SVGS) assert(ratios[name] > 0, `svg-ratios.json no té ${name}`);
+      assert(statSync(path.join(SRC, "logo.svg")).size < 10_000, "logo.svg pesa més de 10 KB");
       for (const name of WEBPS) {
         const file = path.join(SRC, `${name}.webp`);
         assert(existsSync(file), `falta ${name}.webp`);

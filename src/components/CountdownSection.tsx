@@ -28,9 +28,12 @@ export function CountdownSection() {
   ];
 
   return (
-    <section aria-label="Compte enrere" className="bg-taupe px-6 py-10">
+    <section
+      aria-label="Compte enrere"
+      className="bg-taupe bg-gradient-to-r from-hero-dark/60 via-taupe to-hero-dark/40 px-6 py-10"
+    >
       <Reveal className="mx-auto flex max-w-3xl flex-col items-center gap-5 text-center">
-        <p className="font-sans text-xs font-medium tracking-[0.3em] text-olive-dark uppercase">
+        <p className="font-sans text-xs font-semibold tracking-[0.3em] text-olive-dark uppercase">
           Compte enrere per al gran dia
         </p>
         <div className="flex gap-6 sm:gap-10">

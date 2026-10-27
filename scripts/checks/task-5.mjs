@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 
 const HANDS = '#historia img[alt="Il·lustració de les nostres mans"]';
 const FINCA = '#ubicacio img[alt="Il·lustració de la finca"]';
-const ADDRESS = "Carrer d'exemple, 1 · 07000 Ciutat, Mallorca";
-const MAP_HREF = "https://www.google.com/maps/search/?api=1&query=Nom+del+lloc";
+const HANDS_BG = '#historia img[alt=""]';
+const FINCA_BG = '#ubicacio img[alt=""]:not([data-marca-aquarela])';
+const ADDRESS = "Ma-2030, 07193 Bunyola";
+const MAP_HREF = "https://www.google.com/maps/search/?api=1&query=Son+Muntaner+Ma-2030+07193+Bunyola";
 
 // Recorre una secció perquè tots els Reveal s'activin i en retorna la caixa en coordenades de pàgina.
 async function revealSection(page, selector) {
@@ -37,11 +39,20 @@ async function waitScrollSettled(page) {
   }
 }
 
-async function handsParentPosition(page) {
-  return page.evaluate((sel) => {
-    const img = document.querySelector(sel);
-    return img ? getComputedStyle(img.parentElement).position : null;
-  }, HANDS);
+// Imatge de fons a mòbil: absoluta, amb transparència i visible darrere del text.
+async function backgroundImage(page, sel) {
+  return page.evaluate((s) => {
+    const img = document.querySelector(s);
+    if (!img) return null;
+    const r = img.getBoundingClientRect();
+    const wrap = img.parentElement;
+    return {
+      opacity: Number(getComputedStyle(img).opacity),
+      position: getComputedStyle(wrap).position,
+      width: r.width,
+      display: getComputedStyle(wrap).display,
+    };
+  }, sel);
 }
 
 export const checks = [
@@ -50,21 +61,32 @@ export const checks = [
     viewports: ["desktop", "mobile"],
     run: async (page, { shot }) => {
       assert.equal(await page.locator(HANDS).count(), 1, "falta la il·lustració de les mans a #historia");
-      const records = page.locator("#historia h2#records");
-      assert.equal(await records.count(), 1, "falta #historia h2#records");
-      assert.equal((await records.textContent()).trim(), "Records");
+      const text = await page.locator("#historia").textContent();
+      assert(!text.includes("Qui som"), '#historia encara conté "Qui som"');
+      const h2s = await page.$$eval("#historia h2", (els) => els.map((e) => e.textContent.trim()));
+      assert.deepEqual(h2s, ["La nostra història"], `títols de #historia: ${h2s.join(" | ")}`);
+      const sub = page.locator("#historia #records");
+      assert.equal(await sub.count(), 1, "falta el subtítol #records");
+      assert.equal((await sub.textContent()).trim(), "Recordant els nostres moments");
       assert.equal(await page.locator("#galeria").count(), 0, "encara existeix #galeria");
+      // El text apareix progressivament: més d'un Reveal dins la columna de text.
+      const reveals = await page.locator("#historia [data-reveal]").count();
+      assert(reveals >= 5, `només ${reveals} [data-reveal] a #historia`);
       const fotos = await page.evaluate(() =>
         [...document.querySelectorAll("#historia *")].filter(
           (el) => el.children.length === 0 && /Foto/.test(el.textContent),
         ).length,
       );
       assert.equal(fotos, 6, `elements amb "Foto" a #historia: ${fotos}`);
+      // Les senefes sagnen pels costats a propòsit: la secció ha de retallar-les (overflow hidden/clip).
       const overflow = await page.evaluate(() => {
         const s = document.querySelector("#historia");
-        return s.scrollWidth - s.clientWidth;
+        return { px: s.scrollWidth - s.clientWidth, ox: getComputedStyle(s).overflowX };
       });
-      assert(overflow <= 0, `#historia desborda horitzontalment ${overflow}px`);
+      assert(
+        overflow.px <= 0 || ["hidden", "clip"].includes(overflow.ox),
+        `#historia desborda horitzontalment ${overflow.px}px sense overflow hidden`,
+      );
       const clip = await revealSection(page, "#historia");
       await shot("historia", { clip });
     },
@@ -83,11 +105,26 @@ export const checks = [
             window.scrollTo({ top, behavior: "instant" });
           }, offset);
           await waitScrollSettled(page);
+          // S'espera que l'aparició (escala 0,96 → 1) de la il·lustració hagi acabat.
+          await page
+            .waitForFunction(
+              (sel) => {
+                const el = document.querySelector(sel)?.closest("[data-reveal]");
+                if (!el) return true;
+                const s = getComputedStyle(el);
+                return s.opacity === "1" && (s.transform === "none" || s.transform === "matrix(1, 0, 0, 1, 0, 0)");
+              },
+              HANDS,
+              { timeout: 3000 },
+            )
+            .catch(() => {});
           const r = await page.evaluate((sel) => {
             const img = document.querySelector(sel);
             if (!img) return null;
             const b = img.getBoundingClientRect();
-            return { top: b.top, bottom: b.bottom, pos: getComputedStyle(img.parentElement).position };
+            let el = img.parentElement;
+            while (el && el.id !== "historia" && getComputedStyle(el).position !== "sticky") el = el.parentElement;
+            return { top: b.top, bottom: b.bottom, pos: el ? getComputedStyle(el).position : null };
           }, HANDS);
           assert(r, "no hi ha la imatge de les mans");
           assert.equal(r.pos, "sticky", "el pare de les mans no és sticky");
@@ -103,23 +140,30 @@ export const checks = [
     },
   },
   {
-    name: "hands-static-mobile",
+    name: "illustrations-background-mobile",
     viewports: ["mobile"],
     run: async (page) => {
-      const pos = await handsParentPosition(page);
-      assert(pos !== null, "no hi ha la imatge de les mans");
-      assert.notEqual(pos, "sticky", "el pare de les mans és sticky a mòbil");
+      assert(!(await page.locator(HANDS).isVisible()), "la imatge de les mans en columna és visible a mòbil");
+      assert(!(await page.locator(FINCA).isVisible()), "la imatge de la finca en columna és visible a mòbil");
+      for (const [label, sel] of [["mans", HANDS_BG], ["finca", FINCA_BG]]) {
+        const bg = await backgroundImage(page, sel);
+        assert(bg, `no hi ha la imatge de fons de ${label}`);
+        assert.notEqual(bg.display, "none", `la imatge de fons de ${label} és display:none`);
+        assert.equal(bg.position, "absolute", `el contenidor de fons de ${label} no és absolute`);
+        assert(bg.opacity > 0.1 && bg.opacity < 0.6, `opacitat de la imatge de fons de ${label}: ${bg.opacity}`);
+        assert(bg.width > 250, `amplada de la imatge de fons de ${label}: ${bg.width}`);
+      }
     },
   },
   {
-    name: "nav-records-anchor",
+    name: "nav-location-anchor",
     viewports: ["desktop"],
     run: async (page) => {
-      await page.locator("nav a", { hasText: /^\s*Records\s*$/ }).first().click();
+      await page.locator("nav a", { hasText: /^\s*On serà\s*$/ }).first().click();
       await waitScrollSettled(page);
-      const top = await page.evaluate(() => document.querySelector("#records")?.getBoundingClientRect().top);
-      assert(top !== undefined, "no hi ha #records");
-      assert(top >= 0 && top <= 200, `#records top després del clic: ${top}`);
+      const top = await page.evaluate(() => document.querySelector("#ubicacio")?.getBoundingClientRect().top);
+      assert(top !== undefined, "no hi ha #ubicacio");
+      assert(top >= -5 && top <= 200, `#ubicacio top després del clic: ${top}`);
     },
   },
   {
@@ -130,6 +174,25 @@ export const checks = [
       assert.equal(await page.locator("iframe").count(), 0, "encara hi ha un iframe");
       const text = await page.locator("#ubicacio").textContent();
       assert(text.includes(ADDRESS), "falta l'adreça a #ubicacio");
+      assert(text.includes("Son Muntaner"), "falta Son Muntaner a #ubicacio");
+      const h2s = await page.$$eval("#ubicacio h2", (els) => els.map((e) => e.textContent.trim()));
+      assert.deepEqual(h2s, ["On serà"], `títols de #ubicacio: ${h2s.join(" | ")}`);
+      assert(!text.includes("Ubicació"), '#ubicacio encara conté "Ubicació"');
+      assert(!text.includes("al mateix indret"), "#ubicacio encara té el subtítol antic");
+      assert(!text.includes("Carrer d'exemple"), "#ubicacio encara té l'adreça d'exemple");
+      const venue = await page.evaluate(() => {
+        const el = [...document.querySelectorAll("#ubicacio span, #ubicacio strong")].find(
+          (e) => e.textContent.trim() === "Son Muntaner",
+        );
+        return el && Number(getComputedStyle(el).fontWeight);
+      });
+      assert(venue >= 700, `el nom del lloc no és en negreta: ${venue}`);
+      const marca = page.locator("#ubicacio [data-marca-aquarela]");
+      assert.equal(await marca.count(), 1, "falta la marca d'aquarel·la a #ubicacio");
+      const blend = await marca.evaluate((el) => getComputedStyle(el).mixBlendMode);
+      assert.equal(blend, "luminosity", `mix-blend-mode de la marca d'aquarel·la: ${blend}`);
+      await marca.evaluate((el) => (el.complete ? null : new Promise((r) => el.addEventListener("load", r, { once: true }))));
+      assert((await marca.evaluate((el) => el.naturalWidth)) > 0, "la marca d'aquarel·la no es carrega");
       const link = page.locator(`a[href="${MAP_HREF}"]`);
       assert(await link.count() >= 1, "falta l'enllaç del mapa");
       assert((await link.first().textContent()).includes("Com arribar-hi"), "l'enllaç no diu 'Com arribar-hi'");

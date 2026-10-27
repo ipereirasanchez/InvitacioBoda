@@ -1,4 +1,5 @@
 import { Baby, Bus, Car, Shirt, Utensils } from "lucide-react";
+import { Senefa } from "./ui/Senefa";
 import { SectionHeading } from "./ui/SectionHeading";
 import { Reveal } from "./ui/Reveal";
 
@@ -37,24 +38,44 @@ const FAQS = [
 
 export function FAQSection() {
   return (
-    <section id="faq" className="bg-beige px-6 py-24">
-      <SectionHeading eyebrow="Dubtes habituals" title="Preguntes freqüents" />
+    <section
+      id="faq"
+      className="relative scroll-mt-20 overflow-clip bg-beige bg-gradient-to-b from-beige via-beige to-sage-grey/50 px-6 py-24"
+    >
+      <Senefa
+        n={3}
+        className="absolute -right-10 bottom-6 w-[70vw] -scale-x-100 text-olive-dark opacity-20 md:w-[32vw] md:opacity-25"
+      />
 
-      <div className="mx-auto mt-14 grid max-w-5xl gap-6 sm:grid-cols-2">
-        {FAQS.map((faq, i) => {
-          const Icon = faq.icon;
-          return (
-            <Reveal key={faq.question} delay={i * 80}>
-              <article className="flex gap-4 rounded-sm border border-sage-grey bg-ivory p-6">
-                <Icon className="mt-1 shrink-0 text-olive" size={22} strokeWidth={1.4} />
-                <div>
-                  <h3 className="font-display text-xl text-olive-dark">{faq.question}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-olive-dark">{faq.answer}</p>
-                </div>
-              </article>
-            </Reveal>
-          );
-        })}
+      <div className="relative">
+        <SectionHeading
+          title="Preguntes freqüents"
+          ornament={
+            <Senefa n={4} className="mx-auto mt-2 w-44 text-olive opacity-80 sm:w-56" />
+          }
+        />
+
+        <div className="mx-auto mt-10 grid max-w-5xl auto-rows-fr gap-6 sm:grid-cols-2">
+          {FAQS.map((faq, i) => {
+            const Icon = faq.icon;
+            const last = i === FAQS.length - 1 && FAQS.length % 2 === 1;
+            return (
+              <Reveal
+                key={faq.question}
+                delay={i * 80}
+                className={last ? "sm:col-span-2 sm:w-[calc(50%-0.75rem)] sm:justify-self-center" : ""}
+              >
+                <article className="flex h-full gap-4 rounded-sm border border-sage-grey bg-ivory p-6 shadow-sm shadow-olive-dark/5 transition-[transform,box-shadow] duration-300 ease-out motion-safe:hover:-translate-y-1 hover:shadow-lg hover:shadow-olive-dark/10">
+                  <Icon className="mt-0.5 shrink-0 text-olive" size={22} strokeWidth={1.4} />
+                  <div>
+                    <h3 className="font-sans text-base font-bold text-olive-dark">{faq.question}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-olive-dark">{faq.answer}</p>
+                  </div>
+                </article>
+              </Reveal>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
